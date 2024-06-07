@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"time"
@@ -30,6 +31,11 @@ func (t Training) distance() float64 {
 
 // meanSpeed возвращает среднюю скорость бега или ходьбы.
 func (t Training) meanSpeed() float64 {
+	if t.Duration.Hours() == 0 {
+		err := errors.New("duration is zero")
+		fmt.Println(err)
+		return 0
+	}
 	return t.distance() / t.Duration.Hours()
 }
 
@@ -122,8 +128,13 @@ type Walking struct {
 
 // Calories возвращает количество потраченных килокалорий при ходьбе.
 func (w Walking) Calories() float64 {
+	if w.Height == 0 {
+		err := errors.New("height is zero")
+		fmt.Println(err)
+		return 0
+	}
 	meanSpeedMSec := w.meanSpeed() / KmHInMsec
-	cal := CaloriesWeightMultiplier*w.Weight + math.Pow(meanSpeedMSec, 2)/w.Height*
+	cal := CaloriesWeightMultiplier*w.Weight + math.Pow(meanSpeedMSec, 2)/w.Height*CmInM*
 		CaloriesSpeedHeightMultiplier*w.Weight*w.Duration.Hours()*MinInHours
 	return cal
 }
